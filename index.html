@@ -11,20 +11,23 @@
         <input type="text" placeholder="enter city name" spellcheck="false">
         <button><img src="images/search.png" alt=""></button>
       </div>
+      <div class="error">
+          <p>Invalid city name</p>
+      </div>
       <div class="weather">
-        <img src="Images/clouds.png" class="weather-icon">
+        <img src="images/clouds.png" class="weather-icon">
         <h1 class="temp">temp°</h1>
         <h2 class="city">City</h2>
         <div class="details">
           <div class="col">
-            <img src="Images/humidity.png" id="humidity">
+            <img src="images/humidity.png" id="humidity">
             <div>
               <p class="humidity">%</p>
               <p>Humidity</p>
             </div>
           </div>
           <div class="col">
-            <img src="Images/wind.png" id="wind">
+            <img src="images/wind.png" id="wind">
             <div>
               <p class="wind"> mph</p>
               <p>Wind Speed</p>
@@ -45,9 +48,14 @@
 
       async function checkWeather(city){
           const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
-          var data = await response.json();
 
-          console.log(data);
+          if(response.status == 404){
+              document.querySelector(".error").style.display = "block";
+              document.querySelector(".weather").style.display = "none";
+          }
+          else{
+
+          var data = await response.json();
 
           document.querySelector(".city").innerHTML = data.name;
           document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°";
@@ -55,25 +63,41 @@
           document.querySelector(".wind").innerHTML = Math.round(data.wind.speed) + " mph";
 
           if(data.weather[0].main == "Clouds"){
-            weatherIcon.src = "Images/clouds.png";
+            weatherIcon.src = "images/clouds.png";
           }
           else if(data.weather[0].main == "Clear"){
-            weatherIcon.src = "Images/clear.png";
+            weatherIcon.src = "images/clear.png";
           }
           else if(data.weather[0].main == "Rain"){
-            weatherIcon.src = "Images/rain.png";
+            weatherIcon.src = "images/rain.png";
           }
           else if(data.weather[0].main == "Drizzle"){
-            weatherIcon.src = "Images/drizzle.png";
+            weatherIcon.src = "images/drizzle.png";
           }
           else if(data.weather[0].main == "Mist"){
-            weatherIcon.src = "Images/mist.png";
+            weatherIcon.src = "images/mist.png";
           }
+
+          document.querySelector(".weather").style.display = "block";
+          document.querySelector(".error").style.display = "none";
+
+          }
+
       }
 
       searchBtn.addEventListener("click", ()=>{
         checkWeather(searchBox.value);
       })
+
+      searchBox.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+          const city = searchBox.value.trim();
+          if (city !== "") {
+          checkWeather(city);
+        }
+      }
+});
+
 
       
     </script>
